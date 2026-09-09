@@ -1,0 +1,42 @@
+name: Repo Watcher
+
+on:
+  schedule:
+    #Runs every hour. Adjust cron as needed.
+    - cron: '0 * * * *'
+    workflow dispatch: {} # lets you trigger it manually from the Actions tab too
+
+permissions:
+  contents: write # needed so the workflow can commit history/*.json back
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+      
+      - name: Run watcher
+        env:
+          GH_TOKEN: ${{ secrets.WATCHER_GH_TOKEN }}
+          GH_REPOS: ${{ secrets.WATCHER_GH_REPOS }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+        run: python watch_repos.py
+
+      - name: Commit updated history
+        run: |
+          git config user.name "repo-watcher-bot"
+          git config user.email "actions@github.com"
+          git add history/
+          git diff --cached --quiet || git commit -m "Update repo watcher history [skip ci]"
+          git push
