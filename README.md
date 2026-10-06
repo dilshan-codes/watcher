@@ -1,5 +1,9 @@
 # GitHub Repo Watcher
 
+<p align="center">
+  <img src="assets/watcher.gif" alt="WATCHER" width="100%" />
+</p>
+
 ![image alt](https://github.com/dilshan-codes/watcher/blob/36e42098c2a8aea530d80601266358f82cb9ced4/Screenshot.png)
 
 A small tool that tracks activity on repositories you own — traffic stats
